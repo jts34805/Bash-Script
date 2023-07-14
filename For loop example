@@ -1,0 +1,16 @@
+##For loop example
+
+ml fastp/0.23.2
+##Trimming the adapter from Read 1##
+
+mkdir processed
+for file in "rawdata/"*R1.fastq.gz
+do
+    file2 = "${file:8:-13}"
+    fastp -i "$file" -o "processed/""$file2""R1A.fastq.gz" -f 23 -A -G -Q -L
+
+##Put TIR border in header
+    fastp -w 8 -i "processed/""$file2""R1A.fastq.gz" -I "rawdata/""$file2""R2.fastq.gz" -o "processed/""$file2""R1B.fastq.gz" -O "processed/""$file2""R2B.fastq.gz" -U --umi_loc read1 --umi_len 6 --umi_prefix TIR -h fastp.html -A -G -Q -L
+
+    find "processed/" -name "*R1A*" -delete
+done
